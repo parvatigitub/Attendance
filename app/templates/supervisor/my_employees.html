@@ -1,0 +1,51 @@
+{% extends 'supervisor/layout.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">My Employees</h2>
+
+    <!-- Employee Table -->
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Profile</th>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>Aadhaar</th>
+                <th>Designation</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emp in employees %}
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename=emp.profile_image) }}" alt="Profile" width="40" height="40">
+                </td>
+                <td>{{ emp.first_name }} {{ emp.middle_name }} {{ emp.last_name }}</td>
+                <td>{{ emp.phone }}</td>
+                <td>{{ emp.aadhaar_no }}</td>
+                <td>{{ emp.designation }}</td>
+                <td>{{ emp.status }}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="markAttendance('{{ emp.id }}')">
+                        Mark Attendance
+                    </button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="text-center">No employees found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function markAttendance(employeeId) {
+    // Implement attendance marking logic here
+    alert('Mark attendance for employee ID: ' + employeeId);
+}
+</script>
+{% endblock %}

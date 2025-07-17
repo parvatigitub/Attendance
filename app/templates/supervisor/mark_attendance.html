@@ -1,0 +1,167 @@
+{% extends 'supervisor/layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Mark Attendance</h4>
+        <a href="{{ url_for('supervisor.download_attendance') }}" class="btn btn-success">
+            <i class="bi bi-download"></i> Download Excel
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3"><strong>Location:</strong> {{ location_name }}</div>
+                <div class="col-md-3"><strong>Month:</strong> {{ month_name }}</div>
+                <div class="col-md-3"><strong>Week:</strong> {{ week_no }} Week</div>
+                <div class="col-md-3"><strong>Supervisor:</strong> {{ supervisor_name }}</div>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <input type="hidden" name="attendanceData" id="attendanceData">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm text-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Employee</th>
+                        {% for date in week_dates %}
+                            <th>
+                                {{ date.strftime('%a') }}<br>
+                                {{ date.strftime('%d %b') }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employees %}
+                    <!-- Attendance row -->
+                    <tr>
+                        <td class="text-left">
+                            {{ emp.first_name }} {{ emp.last_name }}
+                            <small class="d-block text-muted">{{ emp.employee_code }}</small>
+                        </td>
+                        {% for date in week_dates %}
+                            {% set date_str = date.strftime('%Y-%m-%d') %}
+                            <td class="status-cell"
+                                data-emp-id="{{ emp.id }}"
+                                data-date="{{ date_str }}"
+                                data-status="">
+                                --
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                    <!-- OT input row -->
+                    <tr>
+                        <td class="text-left text-muted small">OT Hours</td>
+                        {% for date in week_dates %}
+                            {% set date_str = date.strftime('%Y-%m-%d') %}
+                            <td>
+                                <input type="number" min="0" placeholder="0" class="form-control form-control-sm ot-input"
+                                    data-emp-id="{{ emp.id }}"
+                                    data-date="{{ date_str }}">
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Attendance
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .status-cell {
+        cursor: pointer;
+        font-weight: bold;
+        user-select: none;
+    }
+
+    .status-p {
+        color: #0d6efd; /* Bootstrap primary blue */
+    }
+
+    .status-ot {
+        color: #dc3545; /* Bootstrap red */
+    }
+
+    .table th, .table td {
+        vertical-align: middle !important;
+    }
+
+    .ot-input {
+        width: 60px;
+        margin: auto;
+        text-align: center;
+    }
+
+    .text-end {
+        text-align: right;
+    }
+</style>
+
+<script>
+    const attendanceMap = {};
+
+    document.querySelectorAll('.status-cell').forEach(cell => {
+        cell.addEventListener('click', () => {
+            const empId = cell.getAttribute('data-emp-id');
+            const date = cell.getAttribute('data-date');
+            const key = `${empId}_${date}`;
+            const currentStatus = cell.getAttribute('data-status');
+
+            if (currentStatus === "") {
+                // First click - Present (Blue)
+                cell.textContent = "P";
+                cell.className = "status-cell status-p";
+                cell.setAttribute('data-status', 'P');
+                attendanceMap[key] = { emp_id: empId, date: date, status: 'P', ot: false };
+            } else if (currentStatus === "P") {
+                // Second click - Present with OT (Red)
+                cell.textContent = "P";
+                cell.className = "status-cell status-ot";
+                cell.setAttribute('data-status', 'P-OT');
+                attendanceMap[key] = { emp_id: empId, date: date, status: 'P', ot: true };
+            } else {
+                // Third click - Clear
+                cell.textContent = "--";
+                cell.className = "status-cell";
+                cell.setAttribute('data-status', '');
+                delete attendanceMap[key];
+            }
+
+            updateHiddenField();
+        });
+    });
+
+    document.querySelectorAll('.ot-input').forEach(input => {
+        input.addEventListener('input', () => {
+            const empId = input.getAttribute('data-emp-id');
+            const date = input.getAttribute('data-date');
+            const key = `${empId}_${date}`;
+            const hours = parseFloat(input.value);
+
+            if (!attendanceMap[key]) {
+                attendanceMap[key] = { emp_id: empId, date: date, status: '', ot: false };
+            }
+
+            attendanceMap[key].ot_hours = isNaN(hours) ? 0 : hours;
+            updateHiddenField();
+        });
+    });
+
+    function updateHiddenField() {
+        document.getElementById("attendanceData").value = JSON.stringify(attendanceMap);
+    }
+</script>
+{% endblock %}

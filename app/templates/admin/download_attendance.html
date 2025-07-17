@@ -1,0 +1,66 @@
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">Download Attendance Report</h3>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('admin.download_attendance') }}">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Supervisor</label>
+                        <select name="supervisor_id" class="form-select">
+                            <option value="">All Supervisors</option>
+                            {% for sup in supervisors %}
+                            <option value="{{ sup.id }}" {% if sup.id|string == request.args.get('supervisor_id') %}selected{% endif %}>
+                                {{ sup.first_name }} {{ sup.last_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Location</label>
+                        <select name="location_id" class="form-select">
+                            <option value="">All Locations</option>
+                            {% for loc in locations %}
+                            <option value="{{ loc.id }}" {% if loc.id|string == request.args.get('location_id') %}selected{% endif %}>
+                                {{ loc.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Search</label>
+                        <input type="text" 
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Name / Phone / Aadhaar"
+                               value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">From Date</label>
+                        <input type="date" 
+                               name="from_date" 
+                               class="form-control"
+                               value="{{ request.args.get('from_date', '') }}">
+                        <label class="form-label mt-2">To Date</label>
+                        <input type="date" 
+                               name="to_date" 
+                               class="form-control"
+                               value="{{ request.args.get('to_date', '') }}">
+                    </div>
+                </div>
+                <div class="text-end">
+                    <a href="{{ url_for('admin.download_attendance') }}" class="btn btn-secondary me-2">
+                        Reset Filters
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-download"></i> Download Excel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'supervisor/layout.html' %}
+{% block content %}
+<div class="container mt-4">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Total Employees</h5>
+                    <h2 class="card-text display-4">{{ total_employees }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Present Today</h5>
+                    <h2 class="card-text display-4">{{ present_employees }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Tracking -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Today's Attendance</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Employee</th>
+                        <th>Designation</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp, att in attendance_records %}
+                    <tr>
+                        <td>{{ emp.first_name }} {{ emp.middle_name }} {{ emp.last_name }}</td>
+                        <td>{{ emp.designation }}</td>
+                        <td>{{ emp.location.name }}</td>
+                        <td>
+                            <span class="badge {% if att.status == 'P' %}bg-success{% elif att.status == 'A' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ att.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <select class="form-select" onchange="markAttendance({{ emp.id }}, this.value)">
+                                <option value="P" {% if att.status == 'P' %}selected{% endif %}>Present</option>
+                                <option value="A" {% if att.status == 'A' %}selected{% endif %}>Absent</option>
+                                <option value="L" {% if att.status == 'L' %}selected{% endif %}>Late</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Employee List -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Your Team</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Designation</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in employees %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ emp.first_name }} {{ emp.middle_name }} {{ emp.last_name }}</td>
+                        <td>{{ emp.designation }}</td>
+                        <td>{{ emp.location.name }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('supervisor.edit_employee', id=emp.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No employees found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function markAttendance(empId, status) {
+    fetch(`{{ url_for('supervisor.mark_attendance') }}/${empId}/${status}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Attendance marked successfully!');
+            } else {
+                alert('Error marking attendance.');
+            }
+        });
+}
+</script>
+{% endblock %}

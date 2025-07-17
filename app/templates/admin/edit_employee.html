@@ -1,0 +1,112 @@
+{% extends 'admin/layout.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Edit Employee</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.first_name.label }} {{ form.first_name(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.middle_name.label }} {{ form.middle_name(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.last_name.label }} {{ form.last_name(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.dob.label }} {{ form.dob(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.doj.label }} {{ form.doj(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.phone.label }} {{ form.phone(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.employee_code.label }} {{ form.employee_code(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.designation.label }} {{ form.designation(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.role.label }} {{ form.role(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.supervisor_id.label }} {{ form.supervisor_id(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.location_id.label }} {{ form.location_id(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.status.label }} {{ form.status(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.aadhaar_no.label }} {{ form.aadhaar_no(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.pan_no.label }} {{ form.pan_no(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.account_number.label }} {{ form.account_number(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.ifsc.label }} {{ form.ifsc(class="form-control") }}
+            </div>
+            <div class="col-md-4 mb-3">
+                {{ form.bank_name.label }} {{ form.bank_name(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.current_address.label }} {{ form.current_address(class="form-control") }}
+            </div>
+            <div class="col-md-6 mb-3">
+                {{ form.permanent_address.label }} {{ form.permanent_address(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                {{ form.aadhaar_image.label }} {{ form.aadhaar_image(class="form-control") }}
+            </div>
+            <div class="col-md-3 mb-3">
+                {{ form.pan_image.label }} {{ form.pan_image(class="form-control") }}
+            </div>
+            <div class="col-md-3 mb-3">
+                {{ form.passbook_image.label }} {{ form.passbook_image(class="form-control") }}
+            </div>
+            <div class="col-md-3 mb-3">
+                {{ form.profile_image.label }} {{ form.profile_image(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.status.label }} {{ form.status(class="form-select") }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="{{ url_for('admin.employee_list') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
