@@ -11,9 +11,7 @@ login_manager = LoginManager()
 csrf = CSRFProtect()
 migrate = Migrate()
 
-def create_app(config_class=Config):
-    app = Flask(__name__)
-    app.config.from_object(config_class)
+
     
     @app.after_request
     def add_header(response):
