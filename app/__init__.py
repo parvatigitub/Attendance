@@ -11,7 +11,7 @@ login_manager = LoginManager()
 csrf = CSRFProtect()
 migrate = Migrate()
 @app.after_request
-    def add_header(response):
+def add_header(response):
         # Prevent all caching for authenticated pages
         if 'Cache-Control' not in response.headers:
             response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
