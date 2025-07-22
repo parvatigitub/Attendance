@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import HiddenField
+from wtforms import BooleanField, IntegerField
 
 class AttendanceForm(FlaskForm):
     emp_id = HiddenField()  # Employee ID (hidden input in form)
