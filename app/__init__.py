@@ -14,7 +14,17 @@ login_manager = LoginManager(app)
 csrf = CSRFProtect(app)
 migrate = Migrate(app, db)
 
+# >>> ADD THIS LINE <<<
+from app import models # This imports your models file, making them known to SQLAlchemy/Migrate
+
 login_manager.login_view = 'auth.login'
+
+# >>> ADD THIS BLOCK (if you don't already have it, or modify if it's there but using app.models.User) <<<
+@login_manager.user_loader
+def load_user(user_id):
+    # Make sure your User model is accessible here via `models.User`
+    return models.User.query.get(int(user_id))
+
 
 # 💡 Cache-control
 @app.after_request
