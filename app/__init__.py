@@ -5,10 +5,11 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from config import Config
 
+# ✅ Flask App and Config Setup
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Extensions
+# ✅ Extensions Initialization
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 csrf = CSRFProtect(app)
@@ -16,7 +17,11 @@ migrate = Migrate(app, db)
 
 login_manager.login_view = 'auth.login'
 
-# 💡 Cache-control
+# ✅ Create tables during deployment
+with app.app_context():
+    db.create_all()
+
+# ✅ Cache-control to prevent back-button login issues
 @app.after_request
 def add_header(response):
     if 'Cache-Control' not in response.headers:
@@ -25,7 +30,7 @@ def add_header(response):
         response.headers['Expires'] = '-1'
     return response
 
-# ✅ Blueprints import and register after app creation
+# ✅ Blueprints register
 from app.routes.auth import auth_bp
 from app.routes.admin import admin_bp
 from app.routes.supervisor import supervisor_bp
