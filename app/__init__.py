@@ -4,11 +4,11 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from config import Config
-from app import models
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+# Extensions
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 csrf = CSRFProtect(app)
@@ -16,7 +16,7 @@ migrate = Migrate(app, db)
 
 login_manager.login_view = 'auth.login'
 
-# Prevent caching of authenticated pages
+# 💡 Cache-control
 @app.after_request
 def add_header(response):
     if 'Cache-Control' not in response.headers:
@@ -25,7 +25,7 @@ def add_header(response):
         response.headers['Expires'] = '-1'
     return response
 
-# Import and register Blueprints
+# ✅ Blueprints import and register after app creation
 from app.routes.auth import auth_bp
 from app.routes.admin import admin_bp
 from app.routes.supervisor import supervisor_bp
